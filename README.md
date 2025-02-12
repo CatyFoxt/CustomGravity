@@ -1,4 +1,4 @@
-# Custom Gravity
+# Custom Gravity for Lab API
 Adds highly customizable gravity modifications to the server.
 
 # Commands
