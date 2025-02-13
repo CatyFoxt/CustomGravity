@@ -4,7 +4,7 @@ Adds highly customizable gravity modifications to the server.
 Introduces both very customizable gravity system for **Items/Pickus** and **Players**.
 
 ## Preview Video
-[![Preview Video](https://img.youtube.com/vi/1oG1IoEFR8I/0.jpg)](https://www.youtube.com/watch?v=1oG1IoEFR8I)
+[![Preview Video](https://img.youtube.com/vi/e3DH_n_fewk/0.jpg)](https://www.youtube.com/watch?v=e3DH_n_fewk)
 
 # Commands
 The command is very easy to use with the advanced gravity system I created.
