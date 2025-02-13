@@ -83,8 +83,10 @@ namespace CustomGravity
         {
             // Clear all gravity cache for next round.
             CustomGravity.Instance.AlteredGravityPlayers.Clear();
-            CustomGravity.Instance.AlteredItemTypes.Clear();
             CustomGravity.Instance.UseTemporaryGravity = false;
+
+            CustomGravity.Instance.AlteredItemTypes.Clear();
+            CustomGravity.Instance.UseTemporaryPickupGravity = false;
         }
     }
 }
