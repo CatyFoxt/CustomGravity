@@ -9,24 +9,24 @@ using UnityEngine;
 namespace CustomGravity
 {
     [CommandHandler(typeof(RemoteAdminCommandHandler))]
-    public class setgravity : ICommand
+    public class pickupgravity : ICommand
     {
-        public string Command { get; } = "setgravity";
-        public string[] Aliases { get; } = new string[] { "setgrav", "setg" };
-        public string Description { get; } = "Modify spesific players gravity. Or everyones with '*'.";
-        public string FailMessage { get; } = "Usage: setgravity (Player Name, Player ID, *) (X) (Y) (Z) \n To Reset: setgravity (reset)";
+        public string Command { get; } = "pickupgravity";
+        public string[] Aliases { get; } = new string[] { "pickupgrav", "pgravity", "pgrav" };
+        public string Description { get; } = "Modify all pickups gravity value.";
+        public string FailMessage { get; } = "Usage: pickupgravity (ItemType, leave empty for every item) (X) (Y) (Z) \n To Reset: pickupgravity (reset)";
 
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
-            // Define variables.
+            // Define variables
             CustomGravity plugin = CustomGravity.Instance;
-            Player player = null;
-            bool isEveryone = false;
+            bool isEveryItem = false;
+            ItemType selectedItem = ItemType.None;
 
             // Check the config if the default gravity vector is set correctly.
-            if (plugin.Config.GravityVector.Count() != 3)
+            if (plugin.Config.PickupGravityVector.Count() != 3)
             {
-                response = "Please check your Config! Your Gravity Vector value is not set correctly!";
+                response = "Please check your Config! Your Pickup Gravity Vector value is not set correctly!";
                 return false;
             }
 
@@ -41,13 +41,10 @@ namespace CustomGravity
             if (arguments.Count == 1 && (arguments.At(0) == "reset" || arguments.At(0) == "default"))
             {
                 
-                plugin.UseTemporaryGravity = false;
-                plugin.AlteredGravityPlayers.Clear();
+                plugin.UseTemporaryPickupGravity = false;
+                plugin.AlteredItemTypes.Clear();
 
-                foreach (Player listPlayer in Player.List)
-                {
-                    listPlayer.Gravity = new UnityEngine.Vector3(plugin.Config.GravityVector[0], plugin.Config.GravityVector[1], plugin.Config.GravityVector[2]);
-                }
+                PickupGravityHandler.CheckAllItemsForGravity();
 
                 response = "Gravity values resetted for entire server! Welcome to earth astronaut.";
                 return true;
@@ -62,33 +59,18 @@ namespace CustomGravity
             // If there is only X Y Z arguments, set gravity for whole server.
             if (arguments.Count == 3)
             {
-                isEveryone = true;
+                isEveryItem = true;
             }
             // If not try find the player from name or id.
             else
             {
-                // Check the first arguemnt is an int. Then find the player from id.
-                if (Int32.TryParse(arguments.At(0), out int id) && Player.TryGet(id, out Player potentialPlayer))
+                if (Enum.TryParse(arguments.At(0), out ItemType itemType))
                 {
-                    player = potentialPlayer;
+                    selectedItem = itemType;
                 }
-                // If first argument is an int. Find the player by name.
-                else if (Player.TryGetPlayersByName(arguments.At(0), out List<Player> potentialPlayers))
-                {
-                    if (potentialPlayers.Count > 0)
-                    {
-                        player = potentialPlayers.First();
-                    }
-                }
-                // Check if the sender wants to apply gravity to everyone.
-                else if (arguments.At(0) == "*" || arguments.At(0) == "all" || arguments.At(0) == "everyone")
-                {
-                    isEveryone = true;
-                }
-                // If nothing works. Idk man.
                 else
                 {
-                    response = "Player Not Found! " + FailMessage;
+                    response = "Please enter a valid Item Type. To see all the types Use: pickupgravity list";
                     return false;
                 }
             }
@@ -101,31 +83,41 @@ namespace CustomGravity
             if (float.TryParse(arguments.At(argumentPosition), out float X) && float.TryParse(arguments.At(argumentPosition + 1), out float Y) && float.TryParse(arguments.At(argumentPosition + 2), out float Z))
             {
                 // Apply gravity to everyone.
-                if (isEveryone)
+                if (isEveryItem)
                 {
-                    plugin.AlteredGravityPlayers.Clear();
+                    // Clear the altered items because this defines a new alteration for every item.
+                    plugin.AlteredItemTypes.Clear();
 
-                    foreach (Player listPlayer in Player.List)
-                    {
-                        listPlayer.Gravity = new UnityEngine.Vector3(X, Y, Z);
-                    }
+                    // Set the temporary pickup gravity values
+                    plugin.TemporaryPickupGravity = new Vector3(X, Y, Z);
+                    plugin.UseTemporaryPickupGravity = true;
 
-                    response = "Gravity for everyone is now " + $"({X}, {Y}, {Z})!";
+                    PickupGravityHandler.CheckAllItemsForGravity();
+
+                    response = "Gravity for every item type is now " + $"({X}, {Y}, {Z})!";
                     return true;
                 }
-                // Apply gravity for spesific player.
+                // Apply gravity for spesific item type.
                 else
                 {
                     Vector3 gravity = new UnityEngine.Vector3(X, Y, Z);
 
-                    if (!plugin.AlteredGravityPlayers.Keys.Contains(player))
+                    if (plugin.AlteredItemTypes.Keys.Contains(selectedItem))
                     {
-                        plugin.AlteredGravityPlayers.Add(player, gravity);
+                        plugin.AlteredItemTypes.Remove(selectedItem);
                     }
 
-                    player.Gravity = gravity;
+                    plugin.AlteredItemTypes.Add(selectedItem, gravity);
 
-                    response = "Gravity for " + player.Nickname + " is now " + $"({X}, {Y}, {Z})!";
+                    foreach (Pickup pickup in Pickup.List)
+                    {
+                        if (pickup.Type == selectedItem)
+                        {
+                            PickupGravityHandler.SetPickupGravity(pickup, new Vector3(X, Y, Z));
+                        }
+                    }
+
+                    response = "Gravity for " + selectedItem + " type is now " + $"({X}, {Y}, {Z})!";
                     return true;
                 }
             }

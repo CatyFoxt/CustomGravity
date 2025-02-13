@@ -23,16 +23,27 @@ namespace CustomGravity
         public bool UseTemporaryGravity = false;
 
         // A List to keep track of players with special gravity.
-        public List<Player> AlteredGravityPlayers = new List<Player>();
+        public Dictionary<Player, Vector3> AlteredGravityPlayers = new Dictionary<Player, Vector3>();
+
+        // To keep track of global gravity that changed with command.
+        public Vector3 TemporaryPickupGravity = new Vector3(0, 0, 0);
+        public bool UseTemporaryPickupGravity = false;
+
+        // A List to keep track of item types with special gravity.
+        public Dictionary<ItemType, Vector3>  AlteredItemTypes = new Dictionary<ItemType, Vector3>();
 
         public override void Enable()
         {
             Instance = this;
-
             LoadConfigs();
+
             LabApi.Events.Handlers.PlayerEvents.ChangedRole += EventHandler.Changed;
             LabApi.Events.Handlers.PlayerEvents.Joined += EventHandler.Joined;
             LabApi.Events.Handlers.ServerEvents.RoundRestarted += EventHandler.Restart;
+
+            LabApi.Events.Handlers.PlayerEvents.DroppedItem += EventHandler.DroppedItem;
+            LabApi.Events.Handlers.PlayerEvents.DroppedAmmo += EventHandler.DroppedAmmo;
+            LabApi.Events.Handlers.PlayerEvents.Death += EventHandler.PlayerDied;
         }
 
         public override void Disable()
@@ -40,6 +51,11 @@ namespace CustomGravity
             LabApi.Events.Handlers.PlayerEvents.ChangedRole -= EventHandler.Changed;
             LabApi.Events.Handlers.PlayerEvents.Joined -= EventHandler.Joined;
             LabApi.Events.Handlers.ServerEvents.RoundRestarted -= EventHandler.Restart;
+
+            LabApi.Events.Handlers.PlayerEvents.DroppedItem -= EventHandler.DroppedItem;
+            LabApi.Events.Handlers.PlayerEvents.DroppedAmmo -= EventHandler.DroppedAmmo;
+            LabApi.Events.Handlers.PlayerEvents.Death -= EventHandler.PlayerDied;
+
             Instance = null;
         }
     }

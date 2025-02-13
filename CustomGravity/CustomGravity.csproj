@@ -34,7 +34,8 @@
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\Master\Assembly-CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp-firstpass">
+    <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Master\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="CommandSystem.Core">
@@ -60,11 +61,17 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\..\..\Master\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Master\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config.cs" />
     <Compile Include="CustomGravity.cs" />
     <Compile Include="EventHandler.cs" />
+    <Compile Include="pickupgravity.cs" />
+    <Compile Include="PickupGravityHandler.cs" />
     <Compile Include="setgravity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
