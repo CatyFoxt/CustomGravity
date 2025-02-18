@@ -1,4 +1,4 @@
-# Custom Gravity for Lab API
+# Custom Gravity for Exiled
 Adds highly customizable gravity modifications to the server.
 
 Introduces both very customizable gravity system for **Items/Pickus** and **Players**.
