@@ -1,4 +1,4 @@
-# Custom Gravity for Exiled
+# Custom Gravity for Exiled (Not Tested!)
 Adds highly customizable gravity modifications to the server.
 
 Introduces both very customizable gravity system for **Items/Pickus** and **Players**.
